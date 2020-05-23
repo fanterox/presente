@@ -1,6 +1,8 @@
 #include "draw.h"
-
 #include <raylib.h>
+#include "rlgl.h"
+#include "entity.h"
+#include "state.h"
 
 void draw_level(const level *lvl){
     // Draw cells, iterate, including borders outside the level
@@ -14,6 +16,8 @@ void draw_level(const level *lvl){
         }
     }
 }
+
+
 
 void draw_state(const level *lvl, const state *sta){
 
@@ -58,6 +62,7 @@ void draw_state(const level *lvl, const state *sta){
         Vector2 vec = {ent.x,ent.y};
         // Draw a circle with the radius of the entity
         DrawCircleV(vec,ent.rad,BLUE);
+
     }
 
     // Draw bullets
@@ -69,7 +74,6 @@ void draw_state(const level *lvl, const state *sta){
         // Draw a circle with the radius of the entity
         DrawCircleV(vec,ent.rad,PINK);
     }
-
     // Stop drawing relative to the camera
     EndMode2D();
 }

@@ -6,6 +6,14 @@
 #include <assert.h>
 #include <math.h>
 
+int score = 0;
+int final = 0;
+int contador;
+int maximo;
+
+FILE *fp;
+FILE *ap;
+ 
 state *state_new(){
     // Ask for memory for the state
     state *sta = malloc(sizeof(state));
@@ -25,6 +33,17 @@ state *state_new(){
 }
 
 void state_update(level *lvl, state *sta){
+
+    // Read what the high score is in the txt file
+    int a;
+    ap= fopen("../presente/Highscore.txt","r");
+    if(fscanf(ap, "%d", &a) != EOF){
+        maximo = a;
+    }
+    else{
+        maximo = 0;
+    }
+    fclose(ap);
 
     // == Update player speed according to buttons
     // (mov_x,mov_y) is a vector that represents the position of the analog control
@@ -84,6 +103,7 @@ void state_update(level *lvl, state *sta){
         }
     }
 
+
     // == Update entities
     // Update player
     entity_physics(lvl,&sta->pla.ent);
@@ -92,8 +112,13 @@ void state_update(level *lvl, state *sta){
     for(int i=0;i<sta->n_enemies;i++){
         entity_physics(lvl,&sta->enemies[i].ent);
         // Kill enemy if it has less than 0 HP
-        if(sta->enemies[i].ent.hp<=0) sta->enemies[i].ent.dead = 1;
+        if(sta->enemies[i].ent.hp<=0){
+            score += (sta->enemies[i].ent.points);
+            sta->enemies[i].ent.dead = 1;
+        }
     }
+
+
     // Update bullets
     for(int i=0;i<sta->n_bullets;i++){
         int col = entity_physics(lvl,&sta->bullets[i].ent);
@@ -127,9 +152,22 @@ void state_update(level *lvl, state *sta){
         }
         // Update the number of enemies
         sta->n_enemies = new_n_enemies;
+        contador = sta->n_enemies;
+        if(sta->n_enemies == 0){
+            final = score;
+            fp = fopen("../presente/Highscore.txt","w");
+            if (final > maximo){
+                fprintf(fp,"%d",final);
+            }
+            else{
+                fprintf(fp, "%d", maximo );
+            }
+            fclose(fp);
+        }
     }
 
 }
+
 
 void state_populate_random(level *lvl, state *sta, int n_enemies){
     assert(n_enemies<=MAX_ENEMIES);
@@ -157,10 +195,12 @@ void state_populate_random(level *lvl, state *sta, int n_enemies){
                     new_enemy->kind   = BRUTE;
                     new_enemy->ent.hp = BRUTE_HP;
                     new_enemy->ent.rad = BRUTE_RAD;
+                    new_enemy->ent.points = BRUTE_PNT;
                 }else{
                     new_enemy->kind   = MINION;
                     new_enemy->ent.hp = MINION_HP;
                     new_enemy->ent.rad = MINION_RAD;
+                    new_enemy->ent.points = MINION_PNT;
                 }
                 // Break while(1) as the operation was successful
                 break;

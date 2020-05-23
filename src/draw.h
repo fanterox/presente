@@ -3,6 +3,7 @@
 
 #include "level.h"
 #include "state.h"
+#include <raylib.h>
 
 // Draws the cells of the level in the screen
 void draw_level(const level *lvl);

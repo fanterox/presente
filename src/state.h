@@ -10,13 +10,19 @@
 
 #define MINION_HP   4
 #define MINION_RAD 12
+#define MINION_PNT 25
 #define BRUTE_HP   12
 #define BRUTE_RAD  16
+#define BRUTE_PNT 75
 
 #define BULLET_DMG 3
 #define BULLET_SPEED 16
 #define BULLET_RAD   5
 
+extern int score;
+extern int final;
+extern int contador;
+extern int maximo;
 
 // ==== PLAYER DEFINITION
 typedef struct {
@@ -39,6 +45,7 @@ typedef struct {
     entity ent;
     // TODO: We may want to add more fields...
 } bullet;
+
 
 // ==== STATE DEFINITION
 
@@ -77,7 +84,5 @@ void state_populate_random(level *lvl, state *sta, int n_enemies);
 
 // Deletes a state and the memory it requires.
 void state_free(state *sta);
-
-
 
 #endif

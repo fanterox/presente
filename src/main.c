@@ -1,10 +1,10 @@
-
 #include <raylib.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 
 #include "level.h"
 #include "draw.h"
-#include "state.h"
 
 int main(int argc, char const *argv[]){
 
@@ -12,7 +12,20 @@ int main(int argc, char const *argv[]){
     const int screen_width = 800;
     const int screen_height = 600;
 
+
     InitWindow(screen_width,screen_height,"Presente - the game");
+
+    InitAudioDevice();
+
+    Music music = LoadMusicStream("../presente/Musica/Hydrogen.ogg");
+    Music victory = LoadMusicStream("../presente/Musica/Static.ogg");
+
+    PlayMusicStream(music);
+    PlayMusicStream(victory);
+    
+    
+    bool pause = false;
+
     SetTargetFPS(60);
 
     // Initialize level and fill randomly
@@ -25,6 +38,24 @@ int main(int argc, char const *argv[]){
 
     // Main loop
     while(!WindowShouldClose()){
+
+        UpdateMusicStream(music);
+        UpdateMusicStream(victory);
+
+        if (contador == 0){
+            ResumeMusicStream(victory);
+            PauseMusicStream(music);
+        }
+
+        if (contador != 0)
+        {
+
+            if (pause) PauseMusicStream(music);
+            else {
+                ResumeMusicStream(music);
+                PauseMusicStream(victory);
+            }
+        }
 
         // Update input depending if keys are pressed or not
         sta->button_state[0] = IsKeyDown(KEY_D);
@@ -47,13 +78,26 @@ int main(int argc, char const *argv[]){
 
             draw_state(lvl, sta);
 
+            DrawText(FormatText("puntaje: %06i", score),5,0,20,RED);
+            DrawText(FormatText("HighScore: %06i", maximo),5,40,20,RED);
+
+            DrawText(FormatText("Enemigos: %i", contador),640,550,20,RED);
+
+            if(contador == 0){
+                DrawText("Nivel Terminado!", 200, 300, 50, GREEN);
+                DrawText("Click esc", 300, 350, 12, GRAY);
+                }
+
             DrawText("Presente profe!",190,200,20,LIGHTGRAY);
 
         EndDrawing();
 
     }
 
-    // Closer window
+    // Close window
+    UnloadMusicStream(victory);
+    UnloadMusicStream(music);
+    CloseAudioDevice();
     CloseWindow();
 
     // Free memory
